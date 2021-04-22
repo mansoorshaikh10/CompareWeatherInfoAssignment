@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="3" passed="3" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2021-04-22T11:11:46Z" name="All Test Suite" finished-at="2021-04-22T11:13:21Z" duration-ms="95286">
+    <groups>
+    </groups>
+    <test started-at="2021-04-22T11:11:46Z" name="C:/Users/shaikm/IdeaProjects/WeatherDemo" finished-at="2021-04-22T11:13:21Z" duration-ms="95286">
+      <class name="mansoorshaikh.com.WeatherInfoTest">
+        <test-method signature="validateCityPin()[pri:0, instance:mansoorshaikh.com.WeatherInfoTest@6f15d60e]" started-at="2021-04-22T11:11:46Z" name="validateCityPin" finished-at="2021-04-22T11:12:17Z" duration-ms="31863" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- validateCityPin -->
+        <test-method signature="validateCityOnMap()[pri:0, instance:mansoorshaikh.com.WeatherInfoTest@6f15d60e]" started-at="2021-04-22T11:12:17Z" name="validateCityOnMap" finished-at="2021-04-22T11:12:48Z" duration-ms="30718" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- validateCityOnMap -->
+        <test-method signature="compareWeatherInfo()[pri:0, instance:mansoorshaikh.com.WeatherInfoTest@6f15d60e]" started-at="2021-04-22T11:12:48Z" name="compareWeatherInfo" finished-at="2021-04-22T11:13:21Z" duration-ms="32681" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- compareWeatherInfo -->
+      </class> <!-- mansoorshaikh.com.WeatherInfoTest -->
+    </test> <!-- C:/Users/shaikm/IdeaProjects/WeatherDemo -->
+  </suite> <!-- All Test Suite -->
+</testng-results>
