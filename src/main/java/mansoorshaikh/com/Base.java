@@ -1,22 +1,22 @@
 package mansoorshaikh.com;
 
+
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Properties;
@@ -27,11 +27,18 @@ public class Base {
     public WebDriver driver;
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
-    public String getProperty(String s) throws IOException {
+    public String getProperty(String s) throws IOException{
         Properties properties = new Properties();
-        FileInputStream fileInputStream = new FileInputStream("C:\\Users\\shaikm\\IdeaProjects\\CompareWeatherReporting\\src\\main\\java\\mansoorshaikh\\com\\data.properties");
-        properties.load(fileInputStream);
-        fileInputStream.close();
+
+        String fileName = "data.properties";
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
+
+            if (inputStream != null) {
+                properties.load(inputStream);
+            } else {
+                throw new FileNotFoundException("property file '" + fileName + "' not found in the classpath");
+            }
+        }
         return properties.getProperty(s);
     }
 
@@ -41,19 +48,18 @@ public class Base {
         String browserName = getProperty("browser");
 
         if (browserName.equalsIgnoreCase("Chrome")) {
-            System.setProperty("webdriver.chrome.driver", "C:\\Selenium\\chromedriver_win32\\chromedriver.exe");
             driver = new ChromeDriver();
 
         } else if (browserName.equalsIgnoreCase("Firefox")) {
-            System.setProperty("webdriver.gecko.driver", "C:\\Selenium\\geckodriver-v0.29.0-win64\\geckodriver.exe");
+            //System.setProperty("webdriver.gecko.driver", "C:\\Selenium\\geckodriver-v0.29.0-win64\\geckodriver.exe");
             driver = new FirefoxDriver();
 
         } else if (browserName.equalsIgnoreCase("Edge")) {
-            System.setProperty("webdriver.edge.driver", "C:\\Selenium\\edgedriver_win64\\msedgedriver.exe");
+            //System.setProperty("webdriver.edge.driver", "C:\\Selenium\\edgedriver_win64\\msedgedriver.exe");
             driver = new EdgeDriver();
 
         } else if (browserName.equalsIgnoreCase("IE")) {
-            System.setProperty("webdriver.ie.driver", "C:\\Selenium\\IEDriverServer_x64_3.141.59\\IEDriverServer.exe");
+            //System.setProperty("webdriver.ie.driver", "C:\\Selenium\\IEDriverServer_x64_3.141.59\\IEDriverServer.exe");
             driver = new InternetExplorerDriver();
 
         } else {
@@ -78,23 +84,64 @@ public class Base {
             e.printStackTrace();
         }
 
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        if (driver.findElement(By.linkText("No Thanks")) != null) {
-            WebElement adNotification = wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.linkText("No Thanks"))));
-            if (adNotification.isEnabled()) {
-                adNotification.click();
+        WebDriverWait wait = new WebDriverWait(driver, 30);
+        if (driver.findElement(By.linkText(getProperty("NoAlerts"))) != null) {
+            WebElement alertNotifications = wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.linkText(getProperty("NoAlerts")))));
+            if (alertNotifications.isEnabled()) {
+                alertNotifications.click();
             }
         }
         driver.manage().window().maximize();
-        driver.findElement(By.cssSelector("#h_sub_menu")).click();
-        driver.findElement(By.linkText("WEATHER")).click();
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//div[@id='loading']")));
+        driver.findElement(By.cssSelector("#" + getProperty("SubMenuHeaderID"))).click();
+        driver.findElement(By.linkText(getProperty("WeatherLinkText"))).click();
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("#" + getProperty("LoadingID"))));
 
     }
 
     public WebElement getCityWeatherInfoNDTV(String parameter) throws IOException {
 
-        return driver.findElement(By.xpath("//span[contains(text(),'" + getProperty("city") +"')]/parent::div/following-sibling::span/b[contains(text(),'" + parameter + "')]"));
+        return driver.findElement(By.xpath("//span[contains(text(),'" + getProperty("city") + "')]/parent::div/following-sibling::span/b[contains(text(),'" + parameter + "')]"));
+    }
+
+    public WebElement getCityPinInfo (String parameter) throws IOException {
+
+        if (parameter.equalsIgnoreCase("cityText")) {
+            return driver.findElement(By.xpath(String.format(getProperty("XcityText"), getProperty("city") , getProperty("city"))));
+        } else if (parameter.equalsIgnoreCase("cityTempInDegree")) {
+            return driver.findElement(By.xpath(String.format(getProperty("XcityTempInDegree"), getProperty("city"))));
+        } else if (parameter.equalsIgnoreCase("cityTempInFahren")) {
+            return driver.findElement(By.xpath(String.format(getProperty("XcityTempInFahren"), getProperty("city"))));
+        } else {
+            return null;
+        }
+    }
+
+    public void validatingCityOnMap () throws IOException {
+
+        driver.findElement(By.xpath("//div[@title='" + getProperty("city") + "']")).click();
+        WebElement cityName = driver.findElement(By.xpath("//span[contains(text(),'" + getProperty("city") + "')]"));
+        WebElement cityCondition = getCityWeatherInfoNDTV("Condition");
+        WebElement cityHumidity = getCityWeatherInfoNDTV("Humidity");
+        WebElement cityTempInDegree = getCityWeatherInfoNDTV("Temp in Degrees");
+        WebElement cityTempInFahren = getCityWeatherInfoNDTV("Temp in Fahrenheit");
+
+        Assert.assertTrue(cityName.isDisplayed() && cityCondition.isDisplayed() && cityHumidity.isDisplayed() &&
+                cityTempInDegree.isDisplayed() && cityTempInFahren.isDisplayed());
+
+//        System.out.println(humidity);
+//        System.out.println(tempInDegree);
+//        System.out.println(tempInFahren);
+//        System.out.println(ndtvSource.getCondition());
+    }
+
+    public void selectCityCheckBox() throws IOException {
+
+        driver.findElement(By.cssSelector("#" + getProperty("searchBoxID"))).clear();
+        driver.findElement(By.cssSelector("#" + getProperty("searchBoxID"))).sendKeys(getProperty("city") + Keys.ENTER);
+        WebElement checkBox = driver.findElement(By.xpath(String.format(getProperty("XcityCheckBox"), getProperty("city"))));
+        if (!(checkBox.isSelected())) {
+            checkBox.click();
+        }
     }
 
     public double getWeatherParaValue(WebElement webElement) {
@@ -115,7 +162,7 @@ public class Base {
     public Weather getWeatherInfoNDTV() throws IOException {
 
         navigateToWeatherPage();
-        driver.findElement(By.xpath("//div[@title='" + getProperty("city") + "']")).click();
+        driver.findElement(By.xpath(String.format(getProperty("XcityPin"), getProperty("city")))).click();
         WebElement cityHumidity = getCityWeatherInfoNDTV("Humidity");
         WebElement cityTempInDegree = getCityWeatherInfoNDTV("Temp in Degrees");
         WebElement cityTempInFahren = getCityWeatherInfoNDTV("Temp in Fahrenheit");

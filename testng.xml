@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <listeners>
+        <listener class-name="mansoorshaikh.com.Listeners"/>
+    </listeners>
+    <test verbose="2" preserve-order="true" name="C:/Users/shaikm/IdeaProjects/WeatherDemo">
+        <classes>
+            <class name="mansoorshaikh.com.WeatherInfoTest">
+                <methods>
+                    <include name="validateCityPin"/>
+                    <include name="validateCityOnMap"/>
+                    <include name="compareWeatherInfo"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
