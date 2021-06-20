@@ -8,9 +8,9 @@
         <classes>
             <class name="mansoorshaikh.com.WeatherInfoTest">
                 <methods>
-                    <include name="validateCityPin"/>
-                    <include name="validateCityOnMap"/>
-                    <include name="compareWeatherInfo"/>
+                        <include name="validateCityPin"/>
+                        <include name="validateCityOnMap"/>
+                        <include name="compareWeatherInfo"/>
                 </methods>
             </class>
         </classes>
