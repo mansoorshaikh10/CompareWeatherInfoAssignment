@@ -3,11 +3,11 @@ package mansoorshaikh.com;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 
-public class ExtentReportsNG {
+public class ExtentReportsNG{
 
     static ExtentReports extent;
 
-    public static ExtentReports getReportObject() {
+    public static ExtentReports getReportObject(){
 
         String path = System.getProperty("user.dir") + "\\Reports\\index.html";
         ExtentSparkReporter reporter = new ExtentSparkReporter(path);
@@ -21,4 +21,5 @@ public class ExtentReportsNG {
         return extent;
 
     }
+
 }
